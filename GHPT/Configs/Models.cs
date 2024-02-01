@@ -2,7 +2,10 @@
 {
     public static class Models
     {
-        public static Dictionary<string, GPTVersion> ModelOptions = new()
+        const string openAiUrl = "https://api.openai.com/v1/chat/completions";
+        const string togetherAiUrl = "https://api.together.xyz/v1/chat/completions";
+
+        public static Dictionary<string, ModelProperties> ModelOptions = new()
         {
             { "gpt-4", new ModelProperties(ModelIcon.GPT4, openAiUrl)},
             { "gpt-3.5-turbo",  new ModelProperties(ModelIcon.GPT3_5, openAiUrl) },

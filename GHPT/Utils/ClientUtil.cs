@@ -8,7 +8,7 @@ namespace GHPT.Utils
 {
 	public static class ClientUtil
 	{
-		public static async Task<ResponsePayload> Ask(GPTConfig config, string prompt, double temperature = 0.0)
+		public static async Task<ResponsePayload> Ask(ModelConfig config, string prompt, double temperature = 0.7)
 		{
 			AskPayload payload = new(
 				config.Model,
