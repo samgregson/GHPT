@@ -9,6 +9,7 @@ using Grasshopper.Kernel.Special;
 using System.Collections;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace GHPT.Components
 {
@@ -18,7 +19,7 @@ public class GHPT : GH_Component, IGH_InitCodeAware
 		private PromptData _data;
 		private readonly Spinner _spinner;
 
-		public GPTConfig CurrentConfig;
+		public ModelConfig CurrentConfig;
 
 		private string previousPrompt = string.Empty;
     
@@ -90,7 +91,7 @@ public class GHPT : GH_Component, IGH_InitCodeAware
 				CurrentConfig = modal.config;
 			}
 
-			if (!CurrentConfig.IsValid())
+			if (!CurrentConfig.IsValid() && ConfigUtil.Configs.Any())
 			{
 				CurrentConfig = ConfigUtil.Configs.First();
 			}
@@ -117,7 +118,7 @@ public class GHPT : GH_Component, IGH_InitCodeAware
 			Menu_AppendSeparator(menu);
 
 			var configs = ConfigUtil.Configs;
-			foreach (GPTConfig config in configs)
+			foreach (ModelConfig config in configs)
 			{
 				Menu_AppendItem(menu, config.Name, (sender, args) =>
 				{
@@ -176,11 +177,11 @@ public class GHPT : GH_Component, IGH_InitCodeAware
 		{
 			DestroyIconCache();
 			SetIconOverride(Icon);
-			SetGPTMessage();
+			SetComponentMessage();
 			Grasshopper.Instances.RedrawCanvas();
 		}
 
-		private void SetGPTMessage()
+		private void SetComponentMessage()
 		{
 			this.Message = CurrentConfig.Model?.ToString()?.Replace('_', '.');
 		}
@@ -354,29 +355,22 @@ public class GHPT : GH_Component, IGH_InitCodeAware
 		public override bool Read(GH_IReader reader)
 		{
 			string name = string.Empty;
-			if (reader.TryGetString(CONFIG_INDEX_NAME, ref name) &&
-				!string.IsNullOrEmpty(name))
-			{
-				CurrentConfig = ConfigUtil.Configs.First(c => c.Name == name);
-			}
-			else
-			{
-				CurrentConfig = ConfigUtil.Configs.FirstOrDefault();
-			}
+			reader.TryGetString(CONFIG_INDEX_NAME, ref name);
+            CurrentConfig = ConfigUtil.Configs.FirstOrDefault(c => c.Name == name);
 
 			return base.Read(reader);
 		}
 
-		/// <summary>
-		/// Provides an Icon for every component that will be visible in the User Interface.
-		/// Icons need to be 24x24 pixels.
-		/// You can add image files to your project resources and access them like this:
-		/// return Resources.IconForThisComponent;
-		/// </summary>
-		protected override System.Drawing.Bitmap Icon => CurrentConfig.Version switch
+        /// <summary>
+        /// Provides an Icon for every component that will be visible in the User Interface.
+        /// Icons need to be 24x24 pixels.
+        /// You can add image files to your project resources and access them like this:
+        /// return Resources.IconForThisComponent;
+        /// </summary>
+        protected override System.Drawing.Bitmap Icon => CurrentConfig.Icon switch
 		{
-			GPTVersion.GPT3_5 => Resources.Icons.light_logo_gpt3_5_24x24,
-			GPTVersion.GPT4 => Resources.Icons.light_logo_gpt4_24x24,
+			ModelIcon.GPT3_5 => Resources.Icons.light_logo_gpt3_5_24x24,
+			ModelIcon.GPT4 => Resources.Icons.light_logo_gpt4_24x24,
 			_ => Resources.Icons.light_logo_24x24,
 		};
 

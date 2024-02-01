@@ -1,7 +1,7 @@
 ﻿namespace GHPT.Configs
 {
 
-    public enum GPTVersion
+    public enum ModelIcon
     {
         None,
         GPT3_5,

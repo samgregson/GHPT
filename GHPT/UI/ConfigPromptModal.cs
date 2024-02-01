@@ -9,7 +9,7 @@ namespace GHPT.UI
 {
     class ConfigPromptModal : Dialog<DialogResult>
     {
-        internal GPTConfig config;
+        internal ModelConfig config;
 
 
         public ConfigPromptModal()
@@ -21,7 +21,7 @@ namespace GHPT.UI
             WindowStyle = WindowStyle.Default;
             Size = new Size(240, -1);
 
-            config = new GPTConfig();
+            config = new ModelConfig();
 
             var token_value = new TextBox { PlaceholderText = "OpenAI Token ..." };
             token_value.TextChanged += (sender, e) => config.Token = token_value.Text;
@@ -30,21 +30,17 @@ namespace GHPT.UI
             config_name.TextChanged += (sender, e) => config.Name = config_name.Text;
 
             var model_version = new ComboBox { DataStore = Models.ModelOptions.Keys, SelectedIndex = 1 };
-            model_version.SelectedValueChanged += (sender, e) =>
-            {
-                config.Model = model_version.SelectedValue.ToString();
-                config.Version = Models.ModelOptions.First(kvp => kvp.Key == config.Model).Value;
-            };
-
-            config = new GPTConfig()
-            {
-                Model = model_version.Text,
-                Name = config_name.Text,
-                Version = Models.ModelOptions.First(kvp => kvp.Key == model_version.Text).Value
-            };
+            model_version.SelectedValueChanged += (sender, e) => config.Model = model_version.SelectedValue.ToString();
 
             DefaultButton = new Button { Text = "Save" };
-            DefaultButton.Click += (sender, e) => Close(DialogResult.Ok);
+            DefaultButton.Click += (sender, e) => {
+                config.Name = config_name.Text;
+                config.Token = token_value.Text;
+                config.Model = model_version.SelectedValue.ToString();
+                config.Url = Models.ModelOptions.First(kvp => kvp.Key == config.Model).Value.Url;
+                config.Icon = Models.ModelOptions.First(kvp => kvp.Key == config.Model).Value.Icon;
+                Close(DialogResult.Ok); 
+            };
 
             AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += (sender, e) => Close(DialogResult.Cancel);

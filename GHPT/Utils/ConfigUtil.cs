@@ -6,21 +6,21 @@ namespace GHPT.Utils
 {
 	public static class ConfigUtil
 	{
-		private static List<GPTConfig> ConfigList = new();
-		public static IReadOnlyList<GPTConfig> Configs => ConfigList;
+		private static List<ModelConfig> ConfigList = new();
+		public static IReadOnlyList<ModelConfig> Configs => ConfigList;
 
 		public static bool CheckConfiguration()
 		{
-			return PersistentSettings.RhinoAppSettings.TryGetChild(nameof(GPTConfig), out var allSettings) &&
+			return PersistentSettings.RhinoAppSettings.TryGetChild(nameof(ModelConfig), out var allSettings) &&
 				allSettings.ChildKeys.Count > 0;
 		}
 
 		public static void LoadConfigs()
 		{
 			PersistentSettings allSettings = null;
-			if (!PersistentSettings.RhinoAppSettings.TryGetChild(nameof(GPTConfig), out allSettings))
+			if (!PersistentSettings.RhinoAppSettings.TryGetChild(nameof(ModelConfig), out allSettings))
 			{
-				allSettings = PersistentSettings.RhinoAppSettings.AddChild(nameof(GPTConfig));
+				allSettings = PersistentSettings.RhinoAppSettings.AddChild(nameof(ModelConfig));
 				allSettings.HiddenFromUserInterface = true;
 			}
 
@@ -32,8 +32,8 @@ namespace GHPT.Utils
 				if (!allSettings.TryGetChild(childKey, out PersistentSettings childSettings))
 					continue;
 
-				GPTConfig config = GetConfigFromSettings(childKey, childSettings);
-				if (!ConfigList.Contains(config))
+				ModelConfig config = GetConfigFromSettings(childKey, childSettings);
+				if (!ConfigList.Contains(config) && config.IsValid())
 				{
 					ConfigList.Add(config);
 					ConfigAdded?.Invoke(null, new ConfigArgs(config));
@@ -41,16 +41,30 @@ namespace GHPT.Utils
 			}
 		}
 
-		private static GPTConfig GetConfigFromSettings(string name, PersistentSettings childSettings)
+		private static ModelConfig GetConfigFromSettings(string name, PersistentSettings childSettings)
 		{
-			childSettings.TryGetEnumValue(nameof(GPTConfig.Version), out GPTVersion version);
-			childSettings.TryGetString(nameof(GPTConfig.Token), out string token);
-			childSettings.TryGetString(nameof(GPTConfig.Model), out string model);
-
-			return new(name, version, token, model);
+			childSettings.TryGetEnumValue(nameof(ModelConfig.Icon), out ModelIcon icon);
+			childSettings.TryGetString(nameof(ModelConfig.Token), out string token);
+			childSettings.TryGetString(nameof(ModelConfig.Model), out string model);
+            childSettings.TryGetString(nameof(ModelConfig.Url), out string url);
+			ModelConfig config = new ModelConfig(name, icon, token, model, url);
+			if (!config.IsValid()) { TryMapConfig(config, model); }
+			return config;
 		}
 
-		public static void SaveConfig(GPTConfig config)
+        /// <summary>
+        /// Given that config class has changed this method attempts to map the new url data to the saved configs by matching `Model` property.
+        /// `Url` has been introduced as part of the model config class.
+        /// `config` is modified.
+        /// Returns true if config is valid.
+        /// </summary>
+        private static bool TryMapConfig(ModelConfig oldConfig, string model)
+        {
+            oldConfig.Url = Models.ModelOptions.First(c => c.Key == model).Value.Url;
+            return oldConfig.IsValid();
+        }
+
+        public static void SaveConfig(ModelConfig config)
 		{
 			if (!ConfigList.Contains(config))
 			{
@@ -59,9 +73,9 @@ namespace GHPT.Utils
 			}
 
 			PersistentSettings allSettings = null;
-			if (!PersistentSettings.RhinoAppSettings.TryGetChild(nameof(GPTConfig), out allSettings))
+			if (!PersistentSettings.RhinoAppSettings.TryGetChild(nameof(ModelConfig), out allSettings))
 			{
-				allSettings = PersistentSettings.RhinoAppSettings.AddChild(nameof(GPTConfig));
+				allSettings = PersistentSettings.RhinoAppSettings.AddChild(nameof(ModelConfig));
 				allSettings.HiddenFromUserInterface = true;
 			}
 
@@ -72,20 +86,21 @@ namespace GHPT.Utils
 				configSettings.HiddenFromUserInterface = true;
 			}
 
-			configSettings.SetString(nameof(GPTConfig.Token), config.Token);
-			configSettings.SetString(nameof(GPTConfig.Model), config.Model);
-			configSettings.SetEnumValue(nameof(GPTConfig.Version), config.Version);
+			configSettings.SetString(nameof(ModelConfig.Token), config.Token);
+			configSettings.SetString(nameof(ModelConfig.Model), config.Model);
+            configSettings.SetString(nameof(ModelConfig.Url), config.Url);
+            configSettings.SetEnumValue(nameof(ModelConfig.Icon), config.Icon);
 		}
 
-		public static void RemoveConfig(GPTConfig config)
+		public static void RemoveConfig(ModelConfig config)
 		{
 			ConfigList.Remove(config);
 			ConfigRemoved?.Invoke(null, new ConfigArgs(config));
 
 			PersistentSettings allSettings = null;
-			if (!PersistentSettings.RhinoAppSettings.TryGetChild(nameof(GPTConfig), out allSettings))
+			if (!PersistentSettings.RhinoAppSettings.TryGetChild(nameof(ModelConfig), out allSettings))
 			{
-				allSettings = PersistentSettings.RhinoAppSettings.AddChild(nameof(GPTConfig));
+				allSettings = PersistentSettings.RhinoAppSettings.AddChild(nameof(ModelConfig));
 				allSettings.HiddenFromUserInterface = true;
 			}
 
@@ -97,8 +112,8 @@ namespace GHPT.Utils
 
 		internal class ConfigArgs : EventArgs
 		{
-			internal readonly GPTConfig Config;
-			internal ConfigArgs(GPTConfig config)
+			internal readonly ModelConfig Config;
+			internal ConfigArgs(ModelConfig config)
 			{
 				Config = config;
 			}

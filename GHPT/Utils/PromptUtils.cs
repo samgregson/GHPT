@@ -1,6 +1,5 @@
 ﻿using GHPT.IO;
 using GHPT.Prompts;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace GHPT.Utils
@@ -23,19 +22,6 @@ namespace GHPT.Utils
 
 		public static PromptData GetPromptDataFromResponse(string chatGPTJson)
 		{
-			JsonSerializerOptions options = new()
-			{
-				AllowTrailingCommas = true,
-				PropertyNameCaseInsensitive = true,
-				IgnoreReadOnlyFields = true,
-				IgnoreReadOnlyProperties = true,
-				ReadCommentHandling = JsonCommentHandling.Skip,
-				WriteIndented = true,
-				IncludeFields = true,
-				NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString,
-				Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-			};
-
 			if (chatGPTJson.ToLowerInvariant().Contains(Prompt.TOO_COMPLEX))
 			{
 				return new PromptData()
@@ -45,10 +31,10 @@ namespace GHPT.Utils
 					Advice = Prompt.TOO_COMPLEX
 				};
 			}
-
-			try
+            
+            try
 			{
-				PromptData result = JsonSerializer.Deserialize<PromptData>(chatGPTJson, options);
+				PromptData result = Newtonsoft.Json.JsonConvert.DeserializeObject<PromptData>(chatGPTJson);
 				result.ComputeTiers();
 				return result;
 			}
@@ -63,7 +49,7 @@ namespace GHPT.Utils
 			}
 		}
 
-		public static async Task<PromptData> AskQuestion(GPTConfig config, string question, double temperature)
+		public static async Task<PromptData> AskQuestion(ModelConfig config, string question, double temperature)
 		{
 			try
 			{

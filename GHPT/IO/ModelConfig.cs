@@ -2,20 +2,22 @@
 
 namespace GHPT.IO
 {
-    public struct GPTConfig
+    public struct ModelConfig
     {
         public string Name { get; set; }
+        
+        public string Url { get; set; }
 
         public string Token { get; set; }
 
         public string Model { get; set; }
 
-        public GPTVersion Version { get; set; }
+        public ModelIcon Icon { get; set; }
 
-        public GPTConfig(string name, GPTVersion version, string token, string model)
+        public ModelConfig(string name, ModelIcon icon, string token, string model, string url)
         {
             this.Name = name;
-            this.Version = version;
+            this.Icon = icon;
             this.Token = token;
             this.Model = model;
         }
@@ -24,7 +26,7 @@ namespace GHPT.IO
             !string.IsNullOrEmpty(Name) &&
             !string.IsNullOrEmpty(Token) &&
             !string.IsNullOrEmpty(Model) &&
-            Version != GPTVersion.None;
+            !string.IsNullOrEmpty(Url);
 
     }
 }

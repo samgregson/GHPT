@@ -24,18 +24,19 @@ namespace UnitTests
 		[TestCaseSource(nameof(Queries))]
 		public async Task GetResponseDataTest(string question)
 		{
-			PromptData data = await PromptUtils.AskQuestion(GetTestConfig(), question);
+			double temperature = 0.0;
+			PromptData data = await PromptUtils.AskQuestion(GetTestConfig(), question, temperature);
 			Assert.That(data.Connections, Is.Not.Empty);
 			Assert.That(data.Additions, Is.Not.Empty);
 		}
 
-		private static GPTConfig GetTestConfig()
+		private static ModelConfig GetTestConfig()
 		{
-			return new GPTConfig()
+			return new ModelConfig()
 			{
 				Model = "gpt-3.5-turbo",
 				Name = "test",
-				Version = GPTVersion.GPT3_5,
+				Icon = ModelIcon.GPT3_5,
 				Token = "invalid"
 			};
 		}
