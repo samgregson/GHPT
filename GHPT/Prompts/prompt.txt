@@ -16,12 +16,16 @@ Always use the given format, avoid any devitation.
 		{
 			"Name": "Number Slider",
 			"Id": 1, // This number must be unique
-			"value": 0..25..100 // This is optional
+			"value": "0..25..100" // This is optional
 		},
 		{
 			"Name": "Number Slider",
 			"Id": 2,
-			"value": -50..25..100 // This is optional
+			"value": "-50..25..100" // This is optional
+		},
+		{
+			"Name": "Addition",
+			"Id": 3
 		}
 	],
 	"Connections": [
