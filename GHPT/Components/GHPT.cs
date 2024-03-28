@@ -247,7 +247,7 @@ namespace GHPT.Components
 				{
 					_spinner.Start();
 				});
-				_data = await PromptUtils.AskQuestion(CurrentConfig, prompt);
+				_data = await PromptUtils.AskQuestion(CurrentConfig, prompt, temperature);
 			}
 
 			Ready?.Invoke(this, new EventArgs());
