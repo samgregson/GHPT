@@ -217,6 +217,7 @@ namespace GHPT.Components
 
 			string prompt = string.Empty;
 			double temperature = 0.0;
+            string output = string.Empty;
 
             DA.GetData(0, ref prompt);
 			DA.GetData(1, ref temperature);
