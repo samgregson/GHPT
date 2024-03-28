@@ -23,18 +23,6 @@ namespace GHPT.Utils
 
 		public static PromptData GetPromptDataFromResponse(string chatGPTJson)
 		{
-			JsonSerializerOptions options = new()
-			{
-				AllowTrailingCommas = true,
-				PropertyNameCaseInsensitive = true,
-				IgnoreReadOnlyFields = true,
-				IgnoreReadOnlyProperties = true,
-				ReadCommentHandling = JsonCommentHandling.Skip,
-				WriteIndented = true,
-				IncludeFields = true,
-				NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString,
-				Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-			};
 
 			if (chatGPTJson.ToLowerInvariant().Contains(Prompt.TOO_COMPLEX))
 			{
@@ -46,13 +34,13 @@ namespace GHPT.Utils
 				};
 			}
 
-			try
-			{
-				PromptData result = JsonSerializer.Deserialize<PromptData>(chatGPTJson, options);
-				result.ComputeTiers();
-				return result;
-			}
-			catch (Exception ex)
+            try
+            {
+                PromptData result = Newtonsoft.Json.JsonConvert.DeserializeObject<PromptData>(chatGPTJson);
+                result.ComputeTiers();
+                return result;
+            }
+            catch (Exception ex)
 			{
 				return new PromptData()
 				{

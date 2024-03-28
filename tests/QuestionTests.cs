@@ -24,7 +24,7 @@ namespace UnitTests
 		[TestCaseSource(nameof(Queries))]
 		public async Task GetResponseDataTest(string question)
 		{
-			PromptData data = await PromptUtils.AskQuestion(GetTestConfig(), question);
+			PromptData data = await PromptUtils.AskQuestion(GetTestConfig(), question, 0);
 			Assert.That(data.Connections, Is.Not.Empty);
 			Assert.That(data.Additions, Is.Not.Empty);
 		}
