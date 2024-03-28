@@ -191,7 +191,7 @@ namespace GHPT.Components
 		protected override void RegisterInputParams(GH_InputParamManager pManager)
 		{
 			pManager.AddTextParameter("Prompt", "P", "LLM prompt for instantiating components", GH_ParamAccess.item);
-			pManager.AddNumberParameter("Temperature", "T", "Controls how \"creatively\" the network responds to your prompt", GH_ParamAccess.item, 0.7);
+			pManager.AddNumberParameter("Temperature", "T", "Controls how \"creatively\" the network responds to your prompt", GH_ParamAccess.item, 0.0);
 
 			pManager.AddTextParameter("LLM Output", "O", "The output of an LLM, from elsewhere", GH_ParamAccess.item);
             pManager[0].Optional = true;
@@ -216,8 +216,7 @@ namespace GHPT.Components
 			_doc = OnPingDocument();
 
 			string prompt = string.Empty;
-			double temperature = 0.7;
-            string output = string.Empty;
+			double temperature = 0.0;
 
             DA.GetData(0, ref prompt);
 			DA.GetData(1, ref temperature);
