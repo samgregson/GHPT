@@ -92,6 +92,23 @@ namespace GHPT.Utils
 			}
 		}
 
-	}
+        public static async Task<PromptData> ParseOutput(GPTConfig config, string output)
+        {
+            try
+            {
+                var returnValue = GetPromptDataFromResponse(GetChatGPTJson(output));
+
+                return returnValue;
+            }
+            catch (Exception ex)
+            {
+                return new PromptData()
+                {
+                    Advice = ex.Message
+                };
+            }
+        }
+
+    }
 
 }

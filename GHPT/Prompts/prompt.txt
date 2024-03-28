@@ -14,16 +14,16 @@ Always use the given format, avoid any devitation.
 	"Additions": [
 		{
 			"Name": "Number Slider",
-			"Id" : 1, // This number must be unique
+			"Id": 1, // This number must be unique
 			"value": 0..25..100 // This is optional
 		},
 		{
 			"Name": "Number Slider",
-			"Id" : 2,
+			"Id": 2,
 			"value": -50..25..100 // This is optional
 		}
 	],
-	"Connections" : [
+	"Connections": [
 		{
 			"To": { // Addition
 				"Id": 3,
@@ -52,21 +52,21 @@ Always use the given format, avoid any devitation.
 // JSON:
 {
 	"Advice": "Remember, to properly define the cup\"s dimensions using the number slider",
-	"Additions" : [
+	"Additions": [
 		{
 			"Name": "Circle CNR",
-			"Id" : 1
+			"Id": 1
 		},
 		{
 			"Name": "Move",
-			"Id" : 2
+			"Id": 2
 		},
 		{
 			"Name": "Loft",
-			"Id" : 3
+			"Id": 3
 		}
 	],
-	"Connections" : [
+	"Connections": [
 		{
 			"To": {
 				"Id": 2,
@@ -108,7 +108,7 @@ Always use the given format, avoid any devitation.
 	"Additions": [
 		{
 			"Name": "Rectangle",
-			"Id" : 1
+			"Id": 1
 		},
 		{
 			"Name": "Number Slider",
@@ -121,7 +121,7 @@ Always use the given format, avoid any devitation.
 		},
 		{
 			"Name": "Extrusion",
-			"Id" : 4
+			"Id": 4
 		},
 		{
 			"Name": "Number Slider",
@@ -129,7 +129,7 @@ Always use the given format, avoid any devitation.
 			"Value": "0..90..360"
 		},
 		{
-			"Name" : "Line",
+			"Name": "Line",
 			"Id": 6
 		},
 		{
@@ -144,18 +144,18 @@ Always use the given format, avoid any devitation.
 		},
 		{
 			"Name": "Twist",
-			"Id" : 9
+			"Id": 9
 		},
 		{
 			"Name": "Solid Union",
-			"Id" : 10
+			"Id": 10
 		},
 		{
 			"Name": "Brep Join",
-			"Id" : 11
+			"Id": 11
 		}
 	],
-	"Connections" : [
+	"Connections": [
 		{
 			"To": {
 				"Id": 4,
@@ -247,14 +247,14 @@ Always use the given format, avoid any devitation.
 			}
 		},
 		{
-		        "To": {
-		                "Id": 9,
-		                "ParameterName": "Axis"
-	        	},
-		        "From":{
-		                "Id": 6,
-		                "ParameterName": "Line"
-		        }
+		    "To": {
+		        "Id": 9,
+		        "ParameterName": "Axis"
+	        },
+		    "From": {
+		        "Id": 6,
+		        "ParameterName": "Line"
+		    }
 		}
 	]
 }

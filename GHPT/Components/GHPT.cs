@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 namespace GHPT.Components
 {
-public class GHPT : GH_Component, IGH_InitCodeAware
+	public class GHPT : GH_Component, IGH_InitCodeAware
 	{
 		private GH_Document _doc;
 		private PromptData _data;
@@ -22,13 +22,13 @@ public class GHPT : GH_Component, IGH_InitCodeAware
 
 		private string previousPrompt = string.Empty;
     
-    private bool allowDupPrompt = false;
+		private bool allowDupPrompt = false;
 
-    public bool PromptOverride
-    {
-        get { return allowDupPrompt; }
-        set { allowDupPrompt = value; }
-    }
+		public bool PromptOverride
+		{
+			get { return allowDupPrompt; }
+			set { allowDupPrompt = value; }
+		}
 
 		private readonly Queue _queue;
 		/// <summary>
@@ -39,7 +39,7 @@ public class GHPT : GH_Component, IGH_InitCodeAware
 		/// new tabs/panels will automatically be created.
 		/// </summary>
 		public GHPT()
-		  : base("GHPT", "GHPT",
+			: base("GHPT", "GHPT",
 			"A component that lets you use ChatGPT to instantiate Grasshopper snippets from a prompt",
 			"Extra", "GHPT")
 		{
@@ -156,11 +156,11 @@ public class GHPT : GH_Component, IGH_InitCodeAware
       item.ToolTipText = "Duplicate prompts are usually disallowed by this component.";
     }
     
-    private void Menu_PromptOverride(object sender, EventArgs e)
-    {
-        PromptOverride = !PromptOverride;
-        ExpireSolution(true);
-    }
+		private void Menu_PromptOverride(object sender, EventArgs e)
+		{
+			PromptOverride = !PromptOverride;
+			ExpireSolution(true);
+		}
 
 		private void OnReady(object sender, EventArgs e)
 		{
@@ -193,8 +193,11 @@ public class GHPT : GH_Component, IGH_InitCodeAware
 			pManager.AddTextParameter("Prompt", "P", "LLM prompt for instantiating components", GH_ParamAccess.item);
 			pManager.AddNumberParameter("Temperature", "T", "Controls how \"creatively\" the network responds to your prompt", GH_ParamAccess.item, 0.7);
 
-			pManager[1].Optional = true;
-		}
+			pManager.AddTextParameter("LLM Output", "O", "The output of an LLM, from elsewhere", GH_ParamAccess.item);
+            pManager[0].Optional = true;
+            pManager[1].Optional = true;
+            pManager[2].Optional = true;
+        }
 
 		/// <summary>
 		/// Registers all the output parameters for this component.
@@ -214,26 +217,39 @@ public class GHPT : GH_Component, IGH_InitCodeAware
 
 			string prompt = string.Empty;
 			double temperature = 0.7;
+            string output = string.Empty;
 
-			DA.GetData(0, ref prompt);
+            DA.GetData(0, ref prompt);
 			DA.GetData(1, ref temperature);
+            DA.GetData(2, ref output);
 
-			if (string.IsNullOrEmpty(prompt))
+			if (!string.IsNullOrEmpty(output))
 			{
+                if (output == previousPrompt && !PromptOverride) return;
+                previousPrompt = output;
+                PromptOverride = false;
+
+                _ = Task.Run(() =>
+                {
+                    _spinner.Start();
+                });
+                _data = await PromptUtils.ParseOutput(CurrentConfig, output);
+
+            }
+			else
+			{
+                if (string.IsNullOrEmpty(prompt)) return;
+                if (prompt == previousPrompt && !PromptOverride) return;
 				previousPrompt = prompt;
-				return;
+				PromptOverride = false;
+
+				_ = Task.Run(() =>
+				{
+					_spinner.Start();
+				});
+				_data = await PromptUtils.AskQuestion(CurrentConfig, prompt);
 			}
 
-      if (prompt == previousPrompt && !PromptOverride)
-          return;
-      previousPrompt = prompt;
-      PromptOverride = false;
-
-			Task.Run(() =>
-			{
-				_spinner.Start();
-			});
-			_data = await PromptUtils.AskQuestion(CurrentConfig, prompt);
 			Ready?.Invoke(this, new EventArgs());
 		}
 
