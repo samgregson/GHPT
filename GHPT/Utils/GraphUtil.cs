@@ -116,25 +116,38 @@ namespace GHPT.Utils
             double[] resultWeights = new double[] { 0 };
             Instances.ComponentServer.FindObjects(new string[] { name }, 10, ref results, ref resultWeights);
 
+            // get culmulative sum of probabilities
+            var weightSum = resultWeights.Sum();
+            var probabilities = resultWeights.Select(w => w / weightSum);
+            var cumSum = probabilities.Select((p, i) => probabilities.Take(i).Sum());
+
+            // get results until 50% cumSum probability
+            results = results.TakeWhile((r, i) => cumSum.ElementAt(i) <= 0.5).ToArray();
+
             var myProxies = results.Where(ghpo => ghpo.Kind == GH_ObjectType.CompiledObject);
 
-            var _components = myProxies.OfType<IGH_Component>();
-            var _params = myProxies.OfType<IGH_Param>();
+            var _components = myProxies.Where(p => p.Type.BaseType.Name == "GH_Component");
+            var _params = myProxies.Where(p => p.Type.BaseType.Name.Contains("Param"));
 
             // Prefer Components to Params
             var myProxy = myProxies.First();
-            if (_components is not null)
-                myProxy = _components.FirstOrDefault() as IGH_ObjectProxy;
-            else if (myProxy is not null)
-                myProxy = _params.FirstOrDefault() as IGH_ObjectProxy;
+            if (_components.Any())
+            {
+                var component = _components.FirstOrDefault();
+                myProxy = component as IGH_ObjectProxy;
+            }
+            else if (_params.Any())
+            {
+                var param = _params.FirstOrDefault();
+                myProxy = param as IGH_ObjectProxy;
+            }
 
             // Sort weird names
             if (fuzzyPairs.ContainsKey(name))
             {
                 name = fuzzyPairs[name];
+                myProxy = Instances.ComponentServer.FindObjectByName(name, true, true);
             }
-
-            myProxy = Instances.ComponentServer.FindObjectByName(name, true, true);
 
             return myProxy;
         }
