@@ -7,27 +7,27 @@ namespace GHPT.Prompts
     public struct PromptData
     {
         public string Advice { get; set; }
-        public IEnumerable<Addition> Additions { get; set; }
+        public IEnumerable<Component> Components { get; set; }
         public IEnumerable<ConnectionPairing> Connections { get; set; }
 
         public void ComputeTiers()
         {
-            List<Addition> additions = this.Additions.ToList();
-            if (additions == null)
+            List<Component> components = this.Components.ToList();
+            if (components == null)
                 return;
 
-            for (int i = 0; i < additions.Count(); i++)
+            for (int i = 0; i < components.Count(); i++)
             {
-                Addition addition = additions[i];
-                int tier = FindParentsRecursive(addition);
-                addition.Tier = tier;
+                Component component = components[i];
+                int tier = FindParentsRecursive(component);
+                component.Tier = tier;
 
-                additions[i] = addition;
+                components[i] = component;
             }
-            this.Additions = additions;
+            this.Components = components;
         }
 
-        public int FindParentsRecursive(Addition child, int depth = 0)
+        public int FindParentsRecursive(Component child, int depth = 0)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace GHPT.Prompts
                 {
                     if (pairing.IsValid())
                     {
-                        Addition parent = Additions.FirstOrDefault(a => pairing.From.Id == a.Id);
+                        Component parent = Components.FirstOrDefault(a => pairing.From.Id == a.Id);
                         int maxDepth = FindParentsRecursive(parent, depth + 1);
                         depths.Add(maxDepth);
                     }
@@ -54,7 +54,7 @@ namespace GHPT.Prompts
         }
     }
 
-    public struct Addition
+    public struct Component
     {
         public string Name { get; set; }
         public int Id { get; set; }

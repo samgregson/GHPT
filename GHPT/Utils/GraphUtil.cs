@@ -23,28 +23,28 @@ namespace GHPT.Utils
         private static readonly Dictionary<int, IGH_DocumentObject> CreatedComponents = new();
 
 
-        public static void InstantiateComponent(GH_Document doc, Addition addition, System.Drawing.PointF pivot)
+        public static void InstantiateComponent(GH_Document doc, Component component, System.Drawing.PointF pivot)
         {
             try
             {
-                string name = addition.Name;
+                string name = component.Name;
                 IGH_ObjectProxy myProxy = GetObject(name);
                 if (myProxy is null)
                     return;
 
                 Guid myId = myProxy.Guid;
 
-                if (CreatedComponents.ContainsKey(addition.Id))
+                if (CreatedComponents.ContainsKey(component.Id))
                 {
-                    CreatedComponents.Remove(addition.Id);
+                    CreatedComponents.Remove(component.Id);
                 }
 
                 var emit = Instances.ComponentServer.EmitObject(myId);
-                CreatedComponents.Add(addition.Id, emit);
+                CreatedComponents.Add(component.Id, emit);
 
                 doc.AddObject(emit, false);
                 emit.Attributes.Pivot = pivot;
-                SetValue(addition, emit);
+                SetValue(component, emit);
             }
             catch
             {
@@ -139,28 +139,28 @@ namespace GHPT.Utils
             return myProxy;
         }
 
-        private static void SetValue(Addition addition, IGH_DocumentObject ghProxy)
+        private static void SetValue(Component component, IGH_DocumentObject ghProxy)
         {
-            string lowerCaseName = addition.Name.ToLowerInvariant();
+            string lowerCaseName = component.Name.ToLowerInvariant();
 
             bool result = ghProxy switch
             {
-                GH_NumberSlider slider => SetNumberSliderData(addition, slider),
-                GH_Panel panel => SetPanelData(addition, panel),
-                Param_Point point => SetPointData(addition, point),
+                GH_NumberSlider slider => SetNumberSliderData(component, slider),
+                GH_Panel panel => SetPanelData(component, panel),
+                Param_Point point => SetPointData(component, point),
                 _ => false
             };
 
         }
 
-        private static bool SetPointData(Addition addition, Param_Point point)
+        private static bool SetPointData(Component component, Param_Point point)
         {
             try
             {
-                if (string.IsNullOrEmpty(addition.Value))
+                if (string.IsNullOrEmpty(component.Value))
                     return false;
 
-                string[] pointValues = addition.Value.Replace("{", "").Replace("}", "").Split(',');
+                string[] pointValues = component.Value.Replace("{", "").Replace("}", "").Split(',');
                 double[] pointDoubles = pointValues.Select(p => double.Parse(p)).ToArray();
 
                 point.SetPersistentData(new Rhino.Geometry.Point3d(pointDoubles[0], pointDoubles[1], pointDoubles[2]));
@@ -178,15 +178,15 @@ namespace GHPT.Utils
             return true;
         }
 
-        private static bool SetPanelData(Addition addition, GH_Panel panel)
+        private static bool SetPanelData(Component component, GH_Panel panel)
         {
-            panel.SetUserText(addition.Value);
+            panel.SetUserText(component.Value);
             return true;
         }
 
-        private static bool SetNumberSliderData(Addition addition, GH_NumberSlider slider)
+        private static bool SetNumberSliderData(Component component, GH_NumberSlider slider)
         {
-            string value = addition.Value;
+            string value = component.Value;
             if (string.IsNullOrEmpty(value)) return false;
             slider.SetInitCode(value);
 

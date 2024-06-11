@@ -11,7 +11,7 @@ Always use the given format, avoid any devitation.
 // JSON: 
 {
 	"Advice": "Make sure to set the number sliders to the correct value",
-	"Additions": [
+	"Components": [
 		{
 			"Name": "Number Slider",
 			"Id" : 1, // This number must be unique
@@ -52,7 +52,7 @@ Always use the given format, avoid any devitation.
 // JSON:
 {
 	"Advice": "Remember, to properly define the cup\"s dimensions using the number slider",
-	"Additions" : [
+	"Components" : [
 		{
 			"Name": "Circle CNR",
 			"Id" : 1
@@ -105,7 +105,7 @@ Always use the given format, avoid any devitation.
 // JSON:
 {
 	"Advice": "Make sure to use reasonable inputs or the skyscraper will look weird",
-	"Additions": [
+	"Components": [
 		{
 			"Name": "Rectangle",
 			"Id" : 1

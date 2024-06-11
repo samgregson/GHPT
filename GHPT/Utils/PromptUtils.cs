@@ -40,7 +40,7 @@ namespace GHPT.Utils
 			{
 				return new PromptData()
 				{
-					Additions = new List<Addition>(),
+					Components = new List<Component>(),
 					Connections = new List<ConnectionPairing>(),
 					Advice = Prompt.TOO_COMPLEX
 				};
@@ -56,7 +56,7 @@ namespace GHPT.Utils
 			{
 				return new PromptData()
 				{
-					Additions = new List<Addition>(),
+					Components = new List<Component>(),
 					Connections = new List<ConnectionPairing>(),
 					Advice = "Exception: " + ex.Message
 				};
