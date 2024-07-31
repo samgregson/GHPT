@@ -13,13 +13,6 @@ namespace GHPT.Utils
 {
     public static class GraphUtil
     {
-
-        private static readonly Dictionary<string, string> fuzzyPairs = new()
-        {
-            { "Extrusion", "Extrude" },
-            { "Text Panel", "Panel" }
-        };
-
         private static readonly Dictionary<int, IGH_DocumentObject> CreatedComponents = new();
 
 
@@ -140,13 +133,6 @@ namespace GHPT.Utils
             {
                 var param = _params.FirstOrDefault();
                 myProxy = param as IGH_ObjectProxy;
-            }
-
-            // Sort weird names
-            if (fuzzyPairs.ContainsKey(name))
-            {
-                name = fuzzyPairs[name];
-                myProxy = Instances.ComponentServer.FindObjectByName(name, true, true);
             }
 
             return myProxy;
