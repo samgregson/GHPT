@@ -26,7 +26,7 @@ namespace UnitTests
 		{
 			PromptData data = await PromptUtils.AskQuestion(GetTestConfig(), question, 0);
 			Assert.That(data.Connections, Is.Not.Empty);
-			Assert.That(data.Additions, Is.Not.Empty);
+			Assert.That(data.Components, Is.Not.Empty);
 		}
 
 		private static GPTConfig GetTestConfig()

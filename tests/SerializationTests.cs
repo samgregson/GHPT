@@ -10,19 +10,19 @@ namespace UnitTests
 
         private static PromptData GetTestPrompt()
         {
-            IEnumerable<Addition> additions = new List<Addition>
+            IEnumerable<Components> additions = new List<Components>
                 {
-                    new Addition() {
+                    new Components() {
                         Name = "Number Slider",
                         Id = 1,
                         Value = "0..50..100"
                     },
-                    new Addition() {
+                    new Components() {
                         Name = "Number Slider",
                         Id = 2,
                         Value = "0..90..360"
                     },
-                    new Addition()
+                    new Components()
                     {
                         Name = "Addition",
                         Id = 3,
@@ -62,7 +62,7 @@ namespace UnitTests
             var promptData = new PromptData()
             {
                 Advice = "Don't eat yellow snow",
-                Additions = additions,
+                Components = additions,
                 Connections = connections
             };
 

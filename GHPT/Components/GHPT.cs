@@ -261,21 +261,21 @@ namespace GHPT.Components
 			if (!string.IsNullOrEmpty(_data.Advice))
 				this.CreateAdvicePanel(_data.Advice);
 
-			if (_data.Additions is null)
+			if (_data.Components is null)
 				return;
 
-			// Compute tiers
-			Dictionary<int, List<Addition>> buckets = new();
+            // Compute tiers
+            Dictionary<int, List<Prompts.Components>> buckets = new();
 
-			foreach (Addition addition in _data.Additions)
+			foreach (Prompts.Components component in _data.Components)
 			{
-				if (buckets.ContainsKey(addition.Tier))
+				if (buckets.ContainsKey(component.Tier))
 				{
-					buckets[addition.Tier].Add(addition);
+					buckets[component.Tier].Add(component);
 				}
 				else
 				{
-					buckets.Add(addition.Tier, new List<Addition>() { addition });
+					buckets.Add(component.Tier, new List<Prompts.Components>() { component });
 				}
 			}
 
@@ -286,9 +286,9 @@ namespace GHPT.Components
 				float x = this.Attributes.Pivot.X + 100 + (xIncrement * tier);
 				float y = this.Attributes.Pivot.Y;
 
-				foreach (Addition addition in buckets[tier])
+				foreach (Prompts.Components component in buckets[tier])
 				{
-					GraphUtil.InstantiateComponent(_doc, addition, new System.Drawing.PointF(x, y));
+                    GraphUtil.InstantiateComponent(_doc, component, new System.Drawing.PointF(x, y));
 					y += yIncrement;
 				}
 			}
